@@ -659,12 +659,15 @@
         // 🔴 আপনার নতুন Deploy করা API Link টি এখানে বসান
         const API_URL = "https://script.google.com/macros/s/AKfycbzvbgME6BT0Bg9LZaMe8yUe_yjfv-N9M5E-gRvp3bhOtK1ZCNzIb2T6Il7-TZH0dRIJ/exec";
 
-        // Universal API Caller Function
+        // Universal API Caller Function (Updated Headers)
         async function callAPI(action, payload = {}) {
             payload.action = action;
             try {
                 const response = await fetch(API_URL, {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
                     body: JSON.stringify(payload)
                 });
                 return await response.json();
@@ -673,7 +676,6 @@
                 throw error;
             }
         }
-
         async function handleLogin() {
             const userId = document.getElementById('email').value;
             const password = document.getElementById('password').value;

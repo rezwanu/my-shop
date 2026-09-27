@@ -406,6 +406,12 @@
             } catch (e) {
                 document.getElementById('product-grid').innerHTML = '<div class="col-12 text-center text-danger py-5">Connection Error! Please refresh.</div>';
             }
+
+            // URL চেক করে অ্যাডমিন প্যানেল ওপেন করা
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('page') === 'admin') {
+                openAdminPanel();
+            }
         });
 
         // UI & Product Logic

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Admin Dashboard</title>
+    <!-- Google Fonts & Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+      body { 
+          font-family: 'Inter', sans-serif; 
+          background-color: #f3f4f6; 
+          color: #1f2937; 
+          margin: 0; 
+          padding: 0; 
+          overflow-x: hidden;
+      }
+      
+      /* Login Screen */
+      .login-wrapper { 
+          height: 100vh; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      }
+      .login-card { 
+          background: #fff; 
+          border-radius: 16px; 
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+          padding: 40px; 
+          width: 100%; 
+          max-width: 400px; 
+      }
+      
+      /* Dashboard Container */
+      .dashboard-container { 
+          display: none; 
+          width: 100%; 
+          min-height: 100vh; 
+      }
+      
+      /* Sidebar Styling */
+      .sidebar { 
+          background: #111827 !important; 
+          color: #d1d5db !important; 
+          width: 250px !important; 
+          height: 100vh !important; 
+          position: fixed !important; 
+          top: 0 !important;
+          left: 0 !important;
+          z-index: 9999 !important; 
+          overflow-y: auto;
+      }
+      
+      .sidebar-brand { 
+          padding: 24px 20px; 
+          font-size: 1.25rem; 
+          font-weight: 700; 
+          color: #fff; 
+          border-bottom: 1px solid #374151; 
+      }
+      
+      .sidebar-menu a { 
+          color: #9ca3af; 
+          text-decoration: none; 
+          padding: 12px 20px; 
+          display: block; 
+          font-weight: 500; 
+          transition: 0.2s; 
+          cursor: pointer; 
+      }
+      
+      .sidebar-menu a:hover, .sidebar-menu a.active { 
+          background: #1f2937; 
+          color: #fff; 
+          border-left: 4px solid #6366f1; 
+      }
+      
+      .sidebar-menu i { width: 24px; }
+      
+      /* Main Content - Clean margin fix */
+      .main-content { 
+          margin-left: 250px !important; 
+          padding: 30px !important; 
+          min-height: 100vh;
+          box-sizing: border-box;
+          background-color: #f3f4f6;
+      }
+      
+      .content-section { display: none !important; } 
+      .content-section.active-section { display: block !important; }
+      
+      /* Cards & Form Elements */
+      .content-card { 
+          background: #fff; 
+          border-radius: 12px; 
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+          padding: 30px; 
+          margin-bottom: 24px; 
+          width: 100%;
+          max-width: 800px;
+      }
+      
+      .form-control, .form-select { 
+          border-radius: 8px; 
+          padding: 10px 16px; 
+          border: 1px solid #d1d5db; 
+          background-color: #fff; 
+          color: #1f2937; 
+          width: 100%;
+      }
+      
+      .form-control:focus, .form-select:focus { 
+          border-color: #6366f1; 
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); 
+      }
+      
+      .btn-primary { 
+          background-color: #4f46e5; 
+          border-color: #4f46e5; 
+          border-radius: 8px; 
+          padding: 10px; 
+          font-weight: 500; 
+          color: #fff; 
+      }
+      .btn-primary:hover { background-color: #4338ca; }
+      
+      .hidden-role { display: none !important; }
+  </style>
+</head>
+<body>
+
+    <!-- ================= Login Section ================= -->
+    <div id="login-section" class="login-wrapper">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-store fa-3x text-primary mb-3" style="color:#4f46e5!important;"></i>
+                <h4 class="fw-bold">Welcome Back</h4>
+                <p class="text-muted small">Please sign in to your account</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-semibold">Email or User ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fa-regular fa-user text-muted"></i></span>
+                        <input type="text" id="email" class="form-control border-start-0" placeholder="admin@store.com" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-semibold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fa-solid fa-lock text-muted"></i></span>
+                        <input type="password" id="password" class="form-control border-start-0" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="button" onclick="handleLogin()" class="btn btn-primary w-100 shadow-sm">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= Dashboard Section ================= -->
+    <div id="dashboard-section" class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-bolt text-warning me-2"></i> E-Com Pro
+            </div>
+            <div class="p-3 text-center border-bottom border-secondary mb-3">
+                <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white mb-2" style="width: 50px; height: 50px; font-size: 20px;">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h6 class="mb-0 text-white"><span id="user-role-display"></span></h6>
+                <small class="text-success">● Online</small>
+            </div>
+            <div class="sidebar-menu">
+                <a onclick="switchTab('overview')" id="nav-overview" class="admin-only menu-item active"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+                <a onclick="switchTab('add-product')" id="nav-add-product" class="admin-only menu-item"><i class="fa-solid fa-plus-circle me-2"></i> Add New Product</a>
+                <a onclick="switchTab('add-category')" id="nav-add-category" class="admin-only menu-item"><i class="fa-solid fa-tags me-2"></i> Add Category</a>
+                <a onclick="switchTab('low-stock')" id="nav-low-stock" class="admin-only menu-item"><i class="fa-solid fa-triangle-exclamation me-2"></i> Low Stock</a>
+                <a onclick="switchTab('place-order')" id="nav-place-order" class="sales-only menu-item"><i class="fa-solid fa-cart-plus me-2"></i> Place New Order</a>
+                <a onclick="switchTab('my-sales')" id="nav-my-sales" class="sales-only menu-item"><i class="fa-solid fa-clock-rotate-left me-2"></i> My Sales</a>
+                <a onclick="switchTab('running-deliveries')" id="nav-running-deliveries" class="menu-item"><i class="fa-solid fa-truck-fast me-2"></i> Running Deliveries</a>
+                <a onclick="switchTab('delivery-history')" id="nav-delivery-history" class="menu-item"><i class="fa-solid fa-clock-rotate-left me-2"></i> Delivery History</a>
+                <a onclick="switchTab('returns')" id="nav-returns" class="admin-only menu-item"><i class="fa-solid fa-arrow-right-arrow-left me-2"></i> Returns</a>
+                <a onclick="switchTab('add-delivery')" id="nav-add-delivery" class="admin-only menu-item"><i class="fa-solid fa-motorcycle me-2"></i> Add Delivery Man</a>
+                <a onclick="switchTab('add-salesman')" id="nav-add-salesman" class="admin-only menu-item"><i class="fa-solid fa-user-tie me-2"></i> Add Salesman</a>
+                <a onclick="logout()" class="text-danger mt-4"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0" id="page-title">Overview</h3>
+                <button class="btn btn-white border bg-white shadow-sm"><i class="fa-regular fa-bell"></i></button>
+            </div>
+            
+            <!-- 1. Overview Section -->
+            <div id="sec-overview" class="content-section active-section admin-only">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card content-card mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><p class="text-muted small fw-semibold mb-1">Today's Sales</p><h3 class="fw-bold mb-0 text-primary" id="dash-today-sales"><i class="fa-solid fa-spinner fa-spin fs-5"></i></h3></div>
+                                <div class="stat-icon bg-indigo-light"><i class="fa-solid fa-wallet"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card content-card mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><p class="text-muted small fw-semibold mb-1">Total Revenue</p><h3 class="fw-bold mb-0 text-success" id="dash-total-revenue"><i class="fa-solid fa-spinner fa-spin fs-5"></i></h3></div>
+                                <div class="stat-icon bg-green-light"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card content-card mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><p class="text-muted small fw-semibold mb-1">Low Stock Alerts</p><h3 class="fw-bold mb-0 text-warning" id="dash-low-stock"><i class="fa-solid fa-spinner fa-spin fs-5"></i></h3></div>
+                                <div class="stat-icon bg-orange-light"><i class="fa-solid fa-boxes-stacked"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="content-card">
+                            <h5 class="fw-bold mb-3">Recent Orders</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-muted small">Order ID</th>
+                                            <th class="text-muted small">Customer Info</th>
+                                            <th class="text-muted small">Status</th>
+                                            <th class="text-muted small">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-recent-orders">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Loading recent orders...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 2. Add New Product Section -->
+            <div id="sec-add-product" class="content-section admin-only">
+                <div class="content-card max-w-2xl">
+                    <form id="addProductForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="small text-muted fw-semibold">Product Name</label>
+                                <input type="text" id="prodName" class="form-control" placeholder="e.g. Label Printer Pro" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="small text-muted fw-semibold">Select Category</label>
+                                <select id="prodCategory" class="form-select" required>
+                                    <option value="">-- Loading Categories... --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="small text-muted fw-semibold">Base Price (৳)</label>
+                                <input type="number" id="prodPrice" class="form-control" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="small text-muted fw-semibold">Initial Stock</label>
+                                <input type="number" id="prodStock" class="form-control" placeholder="e.g. 50" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="small text-muted fw-semibold">Product Image</label>
+                                <input type="file" id="prodImage" class="form-control" accept="image/*" onchange="previewProductImage(event)">
+                                <div class="mt-2 text-center">
+                                    <img id="prodImagePreview" src="" style="max-height: 60px; display: none; border-radius: 6px; border: 1px solid #d1d5db; padding: 2px;">
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="small text-muted fw-semibold">Description</label>
+                                <textarea id="prodDesc" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary w-100 shadow-sm" onclick="saveNewProduct()">Save Complete Product</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. Add Category Section -->
+            <div id="sec-add-category" class="content-section admin-only">
+                <div class="content-card max-w-lg" style="max-width: 500px;">
+                    <form id="addCategoryForm">
+                        <div class="mb-3">
+                            <label class="small text-muted fw-semibold">Category Name</label>
+                            <input type="text" id="catName" class="form-control" placeholder="e.g. Thermal Printers" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="small text-muted fw-semibold">Parent Category (Optional)</label>
+                            <select class="form-select" id="parentCategory">
+                                <option value="none">-- None (Main Category) --</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="office_supplies">Office Supplies</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 11px;">Select a parent if this is a sub-category.</small>
+                        </div>
+                        <button type="button" class="btn btn-primary w-100 shadow-sm" onclick="saveNewCategory()">Create Category</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Low Stock Alerts Section -->
+            <div id="sec-low-stock" class="content-section admin-only">
+                <div class="content-card" style="max-width: 100%;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0 text-warning"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Variant Alerts</h5>
+                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 text-dark" onclick="loadLowStockVariants()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-muted small">Image</th>
+                                    <th class="text-muted small">Product Name</th>
+                                    <th class="text-muted small">SKU</th>
+                                    <th class="text-muted small">Color / Size</th>
+                                    <th class="text-muted small">Current Stock</th>
+                                    <th class="text-muted small">Restock Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="low-stock-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Checking low stock items...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Running Deliveries Section (Standalone & Fixed) -->
+            <div id="sec-running-deliveries" class="content-section">
+                <div class="content-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0 text-primary"><i class="fa-solid fa-truck-fast"></i> Running Deliveries</h5>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="loadPendingOrders()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="delivery-orders-list">
+                        <p class="text-center text-muted mt-4">Loading orders...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5.1 Delivery History Section (Standalone & Fixed) -->
+            <div id="sec-delivery-history" class="content-section">
+                <div class="content-card mb-4 border-top border-success border-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0 text-success"><i class="fa-solid fa-check-circle"></i> Delivery History</h5>
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="loadPendingOrders()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="completed-orders-list">
+                        <p class="text-center text-muted">No completed deliveries yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Returns Section -->
+            <div id="sec-returns" class="content-section admin-only">
+                <div class="content-card" style="max-width: 100%;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0 text-danger"><i class="fa-solid fa-arrow-right-arrow-left"></i> Customer Return & Refund Requests</h5>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="loadReturnRequests()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-muted small">Return ID</th>
+                                    <th class="text-muted small">Order ID</th>
+                                    <th class="text-muted small">User / Customer</th>
+                                    <th class="text-muted small">Reason</th>
+                                    <th class="text-muted small">Proof Image</th>
+                                    <th class="text-muted small">Status</th>
+                                    <th class="text-muted small">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="returns-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">Loading return requests...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Add Delivery Man Section -->
+            <div id="sec-add-delivery" class="content-section admin-only">
+                <div class="row">
+                    <div class="col-md-5 mb-4">
+                        <div class="content-card h-100">
+                            <h5 class="fw-bold mb-4">Register New Delivery Partner</h5>
+                            <form id="addDeliveryForm">
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Full Name</label>
+                                    <input type="text" id="delName" class="form-control" placeholder="e.g. Karim Hassan" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Phone Number</label>
+                                    <input type="tel" id="delPhone" class="form-control" placeholder="017XXXXXXXX" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Assigned Area</label>
+                                    <select id="delArea" class="form-select" required>
+                                        <option value="">-- Select Delivery Zone --</option>
+                                        <option value="Mirpur">Mirpur</option>
+                                        <option value="Dhanmondi">Dhanmondi</option>
+                                        <option value="Gulshan">Gulshan</option>
+                                        <option value="Uttara">Uttara</option>
+                                        <option value="Motijheel">Motijheel</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Set User ID</label>
+                                    <input type="text" id="delUserId" class="form-control" placeholder="e.g. DEL-101" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="small text-muted fw-semibold">Set Password</label>
+                                    <input type="text" id="delPassword" class="form-control" placeholder="Create a strong password" required>
+                                </div>
+                                <button type="button" class="btn btn-primary w-100 shadow-sm" onclick="registerUser('delivery')">Create Delivery Account</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7 mb-4">
+                        <div class="content-card h-100">
+                            <h5 class="fw-bold mb-4">Active Delivery Partners</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-muted small">Partner Info</th>
+                                            <th class="text-muted small">Assigned Area</th>
+                                            <th class="text-muted small">User ID</th>
+                                            <th class="text-muted small">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <!-- Delivery Partner Table Body -->
+                                    <tbody id="delivery-table-body">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-3">Loading delivery partners...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Add Salesman Section -->
+            <div id="sec-add-salesman" class="content-section admin-only">
+                <div class="row">
+                    <div class="col-md-5 mb-4">
+                        <div class="content-card h-100">
+                            <h5 class="fw-bold mb-4">Register New Salesman</h5>
+                            <form id="addSalesmanForm">
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Full Name</label>
+                                    <input type="text" id="salesName" class="form-control" placeholder="e.g. Shafiqul Islam" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Phone Number</label>
+                                    <input type="tel" id="salesPhone" class="form-control" placeholder="017XXXXXXXX" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Assigned Route / Area</label>
+                                    <select id="salesArea" class="form-select" required>
+                                        <option value="">-- Select Route --</option>
+                                        <option value="Route-A">Route A (Mirpur, Pallabi)</option>
+                                        <option value="Route-B">Route B (Dhanmondi, New Market)</option>
+                                        <option value="Route-C">Route C (Gulshan, Banani)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-semibold">Set User ID</label>
+                                    <input type="text" id="salesUserId" class="form-control" placeholder="e.g. SR-201" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="small text-muted fw-semibold">Set Password</label>
+                                    <input type="text" id="salesPassword" class="form-control" placeholder="Create a strong password" required>
+                                </div>
+                                <button type="button" class="btn btn-primary w-100 shadow-sm" onclick="registerUser('salesman')">Create Sales Account</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7 mb-4">
+                        <div class="content-card h-100">
+                            <h5 class="fw-bold mb-4">Active Sales Team</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-muted small">Salesman Info</th>
+                                            <th class="text-muted small">Route</th>
+                                            <th class="text-muted small">User ID</th>
+                                            <th class="text-muted small">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="salesman-table-body">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-3">Loading sales team...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Place New Order (Salesman) -->
+            <div id="sec-place-order" class="content-section sales-only">
+              <div class="content-card" style="background: #ffffff !important; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 800px; width: 100%;">
+                  <h5 class="fw-bold mb-4" style="color: #1f2937;">Create Customer Order</h5>
+                  <form id="newOrderForm">
+                      <div class="row">
+                          <div class="col-md-6 mb-3">
+                              <label class="small text-muted fw-semibold" style="color: #4b5563 !important; display: block; margin-bottom: 5px;">Customer Name</label>
+                              <input type="text" id="custName" class="form-control" placeholder="Shop / Owner Name" required>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                              <label class="small text-muted fw-semibold" style="color: #4b5563 !important; display: block; margin-bottom: 5px;">Phone Number</label>
+                              <input type="tel" id="custPhone" class="form-control" placeholder="017XXXXXXXX" required>
+                          </div>
+                          <div class="col-md-12 mb-3">
+                              <label class="small text-muted fw-semibold" style="color: #4b5563 !important; display: block; margin-bottom: 5px;">Delivery Address</label>
+                              <input type="text" id="custAddress" class="form-control" placeholder="Full address of the shop" required>
+                          </div>
+                          <div class="col-md-8 mb-3">
+                              <label class="small text-muted fw-semibold" style="color: #4b5563 !important; display: block; margin-bottom: 5px;">Select Product</label>
+                              <select id="productSelect" class="form-select" required>
+                                  <option value="">-- Loading Products... --</option>
+                              </select>
+                          </div>
+                          <div class="col-md-4 mb-3">
+                              <label class="small text-muted fw-semibold" style="color: #4b5563 !important; display: block; margin-bottom: 5px;">Quantity</label>
+                              <input type="number" id="orderQty" class="form-control" value="1" min="1" required>
+                          </div>
+                      </div>
+                      <button type="button" class="btn btn-primary w-100 mt-2 shadow-sm" onclick="submitNewOrder()">Submit Order</button>
+                  </form>
+              </div>
+            </div>
+
+            <!-- 10. My Sales History (Salesman) -->
+            <div id="sec-my-sales" class="content-section sales-only">
+                <div class="content-card">
+                    <h5 class="fw-bold mb-4">My Sales History</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-muted small">Order ID</th>
+                                    <th class="text-muted small">Customer Details</th>
+                                    <th class="text-muted small">Total Amount</th>
+                                    <th class="text-muted small">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="my-sales-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Loading history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Status Update Action Panel (Popup Modal) - Global -->
+    <div id="update-status-panel" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(17, 24, 39, 0.7); z-index: 99999; backdrop-filter: blur(3px);">
+        <div class="content-card shadow-lg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 500px; background: #ffffff; margin: 0; border: none; border-top: 4px solid #6366f1; border-radius: 12px; padding: 25px;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0">Update Order: <span id="current-update-id" class="text-primary"></span></h5>
+                <button type="button" class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="closeUpdateModal()">
+                    <i class="fa-solid fa-xmark fs-6"></i>
+                </button>
+            </div>
+            <form id="orderUpdateForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted fw-semibold mb-1">Order Status</label>
+                        <select class="form-select" id="orderStatusSelect" onchange="toggleDeliveryProof()">
+                            <option value="Pending">Pending</option>
+                            <option value="Packed">Packed</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Canceled">Canceled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted fw-semibold mb-1">Payment Status</label>
+                        <select class="form-select" id="paymentStatus">
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Paid">Paid</option>
+                            <option value="COD">COD</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 mb-3" id="assignDeliveryField" style="display: none;">
+                        <label class="small text-muted fw-semibold mb-1">Assign Delivery Man</label>
+                        <select class="form-select" id="deliveryManSelect">
+                            <option value="">-- Select Delivery Partner --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 mb-3" id="packingImageField" style="display: none;">
+                        <label class="small text-muted fw-semibold mb-1">Packing Image</label>
+                        <input type="file" class="form-control" accept="image/*" onchange="previewPackingImage(event)">
+                        <div class="mt-2 text-center">
+                            <img id="packingImagePreview" src="" style="max-height: 80px; display: none; border-radius: 6px; border: 1px solid #d1d5db; padding: 2px;">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3" id="proofUploadField" style="display: none;">
+                        <label class="small text-muted fw-semibold mb-1">Delivery Proof Image</label>
+                        <input type="file" class="form-control" accept="image/*" onchange="previewDeliveryProof(event)">
+                        <div class="mt-2 text-center">
+                            <img id="deliveryProofPreview" src="" style="max-height: 80px; display: none; border-radius: 6px; border: 1px solid #d1d5db; padding: 2px;">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success w-100 mt-2 shadow-sm py-2 fw-bold" onclick="saveOrderStatusUpdate()">
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i> Save Update
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 🔴 আপনার নতুন Deploy করা API Link টি এখানে বসান
+        const API_URL = "https://script.google.com/macros/s/AKfycbws63mYViM5vYe9sn1ZlSS2QhnvU5JxR-XbGgif9bcqaBkzIg4Ws9cZC-oQCLJ17T0g/exec";
+
+        // Universal API Caller Function
+        async function callAPI(action, payload = {}) {
+            payload.action = action;
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                throw error;
+            }
+        }
+
+        async function handleLogin() {
+            const userId = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.querySelector('#loginForm button');
+
+            if (!userId || !password) { alert("Please enter both User ID and Password!"); return; }
+
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            loginBtn.disabled = true;
+
+            try {
+                const result = await callAPI('verifyLogin', { userId: userId, password: password });
+                loginBtn.innerHTML = 'Sign In'; loginBtn.disabled = false;
+
+                if (result.status === 'success') {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('dashboard-section').style.display = 'block';
+                    document.getElementById('user-role-display').innerText = result.role.toUpperCase();
+
+                    document.querySelectorAll('.admin-only, .sales-only').forEach(el => el.classList.add('hidden-role'));
+
+                    const roleLower = result.role.toLowerCase();
+                    if(roleLower === 'admin') {
+                        document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden-role'));
+                        switchTab('overview');
+                    } else if(roleLower === 'salesman' || roleLower === 'sales') {
+                        document.querySelectorAll('.sales-only').forEach(el => el.classList.remove('hidden-role'));
+                        switchTab('place-order');
+                    } else if(roleLower === 'delivery') {
+                        switchTab('running-deliveries');
+                        loadPendingOrders();
+                    }
+                } else { alert("Login Failed: " + result.message); }
+            } catch(error) {
+                loginBtn.innerHTML = 'Sign In'; loginBtn.disabled = false;
+                alert("Error: Connection Failed");
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            
+            const targetSec = document.getElementById('sec-' + tabId);
+            const targetNav = document.getElementById('nav-' + tabId);
+            
+            if(targetSec) targetSec.classList.add('active-section');
+            if(targetNav) targetNav.classList.add('active');
+            
+            const titleMap = {
+                'overview': 'Overview', 'add-product': 'Add New Product', 'add-category': 'Add Category',
+                'low-stock': 'Low Stock Alerts', 'running-deliveries': 'Running Deliveries',
+                'delivery-history': 'Delivery History', 'returns': 'Returns & Refunds',
+                'add-delivery': 'Add Delivery Partner', 'add-salesman': 'Manage Sales Team',
+                'place-order': 'Place New Order', 'my-sales': 'My Sales History'
+            };
+            
+            const pageTitle = document.getElementById('page-title');
+            if(pageTitle) pageTitle.innerText = titleMap[tabId] || 'Dashboard';
+
+            if (tabId === 'returns') loadReturnRequests();
+            else if (tabId === 'low-stock') loadLowStockVariants();
+            else if (tabId === 'add-delivery' || tabId === 'add-salesman') loadActiveUsers();
+            else if (tabId === 'add-product') loadCategoriesForDropdown();
+            else if (tabId === 'place-order') loadProductsForOrder();
+            else if (tabId === 'my-sales') loadMySalesHistory();
+            else if (tabId === 'overview') loadDashboardOverview();
+        }
+
+        function logout() {
+            document.getElementById('login-section').style.display = 'flex';
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // --- Categories ---
+        async function loadCategoriesForDropdown() {
+            const catSelect = document.getElementById('prodCategory');
+            if (!catSelect) return;
+            catSelect.innerHTML = '<option value="">-- Loading... --</option>';
+            try {
+                const res = await callAPI('getCategoriesForDropdown');
+                if(res.status === 'success' && res.data.length > 0) {
+                    let optionsHtml = '<option value="">-- Choose Category --</option>';
+                    res.data.forEach(cat => optionsHtml += `<option value="${cat.id}">${cat.name}</option>`);
+                    catSelect.innerHTML = optionsHtml;
+                } else { catSelect.innerHTML = '<option value="">-- No Categories --</option>'; }
+            } catch(e) { catSelect.innerHTML = '<option value="">-- Error --</option>'; }
+        }
+
+        async function saveNewCategory() {
+            const catName = document.getElementById('catName').value;
+            const parentCat = document.getElementById('parentCategory').value;
+            const btn = document.querySelector('#addCategoryForm button');
+            
+            if (!catName) { alert("Please enter a category name!"); return; }
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+            
+            try {
+                const res = await callAPI('addCategory', { formData: { categoryName: catName, parentCategory: parentCat } });
+                if(res.status === 'success') { alert(res.message); document.getElementById('addCategoryForm').reset(); }
+                else { alert("Error: " + res.message); }
+            } catch(e) { alert("Connection Error!"); }
+            btn.innerHTML = 'Create Category'; btn.disabled = false;
+        }
+
+        // --- Products ---
+        function previewProductImage(event) {
+            const reader = new FileReader();
+            const imageField = document.getElementById("prodImagePreview");
+            reader.onload = function() {
+                if(reader.readyState === 2) { imageField.src = reader.result; imageField.style.display = "inline-block"; }
+            }
+            if (event.target.files && event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function saveNewProduct() {
+            const name = document.getElementById('prodName').value; const price = document.getElementById('prodPrice').value;
+            const category = document.getElementById('prodCategory').value; const desc = document.getElementById('prodDesc').value;
+            const stock = document.getElementById('prodStock').value; const imageInput = document.getElementById('prodImage');
+            const btn = document.querySelector('#addProductForm button');
+            
+            if (!name || !price || !category || !stock) { alert("Please fill required fields!"); return; }
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+
+            let base64Data = ""; let imageName = "";
+            if (imageInput.files && imageInput.files[0]) {
+                imageName = imageInput.files[0].name; base64Data = await toBase64(imageInput.files[0]);
+            }
+            
+            const data = { productName: name, basePrice: price, categoryId: category, description: desc, stockQty: stock, imageBytes: base64Data, imageName: imageName };
+            
+            try {
+                const res = await callAPI('addProduct', { formData: data });
+                if(res.status === 'success') { 
+                    alert(res.message); document.getElementById('addProductForm').reset(); 
+                    document.getElementById('prodImagePreview').style.display = 'none';
+                } else { alert("Error: " + res.message); }
+            } catch(e) { alert("Connection Error!"); }
+            btn.innerHTML = 'Save Complete Product'; btn.disabled = false;
+        }
+
+        // --- Dashboard Overview ---
+        async function loadDashboardOverview() {
+            try {
+                const res = await callAPI('getDashboardOverview');
+                if(res.status === 'success') {
+                    const data = res.data;
+                    document.getElementById('dash-today-sales').innerText = '৳ ' + data.todaySales.toLocaleString();
+                    document.getElementById('dash-total-revenue').innerText = '৳ ' + data.totalRevenue.toLocaleString();
+                    document.getElementById('dash-low-stock').innerText = data.lowStockCount;
+                    
+                    const tbody = document.getElementById('dash-recent-orders');
+                    if (data.recentOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No orders yet.</td></tr>'; return; } 
+                    
+                    let html = '';
+                    data.recentOrders.forEach(order => {
+                        let statusBadge = order.status === 'Pending' ? 'bg-warning text-dark' : (order.status === 'Delivered' ? 'bg-success' : 'bg-primary');
+                        html += `<tr><td class="text-primary fw-bold">${order.orderId}</td><td>${order.customer.split(' (')[0]}<br><small>৳${order.amount}</small></td><td><span class="badge ${statusBadge}">${order.status}</span></td><td><button class="btn btn-sm btn-outline-primary" onclick="openUpdateModal('${order.orderId}')">Update</button></td></tr>`;
+                    });
+                    tbody.innerHTML = html;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // --- Orders Management & Assignment (Delivery/Status) ---
+        async function loadPendingOrders() {
+            const activeContainer = document.getElementById('delivery-orders-list');
+            const historyContainer = document.getElementById('completed-orders-list');
+            const userId = document.getElementById('email').value;
+            const role = document.getElementById('user-role-display').innerText.trim();
+            
+            try {
+                const res = await callAPI('getOrdersForFrontend', { userId: userId, role: role });
+                if(res.status === 'success') {
+                    let activeHtml = '', historyHtml = '';
+                    res.data.forEach(order => {
+                        const isDelivered = (order.status || '').toLowerCase() === 'delivered';
+                        const badge = isDelivered ? '<span class="badge bg-success">Delivered</span>' : `<span class="badge bg-warning text-dark">${order.status || 'Pending'}</span>`;
+                        const card = `<div class="card mb-3 bg-light"><div class="card-body"><div class="d-flex justify-content-between"><h6>📦 ${order.orderId}</h6>${badge}</div><p class="mb-1 small">Customer: ${order.customerName}<br>Address: ${order.address}<br>Amount: ৳${order.amount}</p><div class="mt-2"><a href="${order.invoiceUrl}" class="btn btn-sm btn-outline-secondary me-2">Invoice</a> ${!isDelivered ? `<button class="btn btn-sm btn-success" onclick="openUpdateModal('${order.orderId}')">Update</button>` : ''}</div></div></div>`;
+                        if(isDelivered) historyHtml += card; else activeHtml += card;
+                    });
+                    if(activeContainer) activeContainer.innerHTML = activeHtml || '<p class="text-center text-muted">No running deliveries.</p>';
+                    if(historyContainer) historyContainer.innerHTML = historyHtml || '<p class="text-center text-muted">No history.</p>';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function openUpdateModal(orderId) {
+            document.getElementById('update-status-panel').style.display = 'block';
+            document.getElementById('current-update-id').innerText = orderId;
+            const assignSelect = document.getElementById('deliveryManSelect');
+            
+            if (assignSelect) {
+                assignSelect.innerHTML = '<option value="">-- Loading... --</option>';
+                try {
+                    const res = await callAPI('getUsersForFrontend');
+                    if(res.status === 'success') {
+                        let html = '<option value="">-- Leave Unassigned --</option>';
+                        res.data.forEach(u => { if (u.role.toLowerCase() === 'delivery') html += `<option value="${u.userId}">${u.name} - ${u.assignedArea}</option>`; });
+                        assignSelect.innerHTML = html;
+                    }
+                } catch(e) { assignSelect.innerHTML = '<option value="">-- Error --</option>'; }
+            }
+        }
+
+        function closeUpdateModal() { document.getElementById('update-status-panel').style.display = 'none'; }
+        
+        function toggleDeliveryProof() {
+            const status = document.getElementById('orderStatusSelect').value;
+            document.getElementById('packingImageField').style.display = (status === 'Packed' || status === 'Shipped') ? 'block' : 'none';
+            document.getElementById('assignDeliveryField').style.display = (status === 'Packed' || status === 'Shipped') ? 'block' : 'none';
+            document.getElementById('proofUploadField').style.display = (status === 'Delivered') ? 'block' : 'none';
+        }
+
+        async function saveOrderStatusUpdate() {
+            const orderId = document.getElementById('current-update-id').innerText.trim();
+            const status = document.getElementById('orderStatusSelect').value;
+            const btn = document.querySelector('#orderUpdateForm button.btn-success');
+            
+            btn.innerHTML = 'Saving...'; btn.disabled = true;
+            
+            let packingData = "", proofData = "";
+            const packingFile = document.querySelector('#packingImageField input').files[0];
+            const proofFile = document.querySelector('#proofUploadField input').files[0];
+            
+            if(packingFile) packingData = await toBase64(packingFile);
+            if(proofFile) proofData = await toBase64(proofFile);
+            
+            const updateData = {
+                orderId: orderId, status: status, paymentStatus: document.getElementById('paymentStatus').value,
+                deliveryManId: document.getElementById('deliveryManSelect') ? document.getElementById('deliveryManSelect').value : "",
+                packingImageBytes: packingData, packingImageName: packingFile ? packingFile.name : "",
+                imageBytes: proofData, imageName: proofFile ? proofFile.name : ""
+            };
+            
+            try {
+                const res = await callAPI('updateOrderStatus', { updateData: updateData });
+                if(res.status === 'success') { alert("Updated!"); closeUpdateModal(); loadPendingOrders(); loadDashboardOverview(); }
+                else alert("Error: " + res.message);
+            } catch(e) { alert("Connection Error"); }
+            btn.innerHTML = 'Save Update'; btn.disabled = false;
+        }
+
+        // --- Low Stock ---
+        async function loadLowStockVariants() {
+            const tbody = document.getElementById('low-stock-table-body');
+            try {
+                const res = await callAPI('getLowStockVariants');
+                if(res.status === 'success' && res.data.length > 0) {
+                    let html = '';
+                    res.data.forEach(item => {
+                        html += `<tr><td>${item.productName}</td><td>${item.sku}</td><td><span class="badge bg-danger">${item.stockQty} left</span></td><td><button class="btn btn-sm btn-success" onclick="handleRestock('${item.variantId}')">Add 10</button></td></tr>`;
+                    });
+                    tbody.innerHTML = html;
+                } else { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-success">Stock is full!</td></tr>'; }
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error Loading</td></tr>'; }
+        }
+
+        async function handleRestock(variantId) {
+            try {
+                const res = await callAPI('restockVariant', { variantId: variantId, qty: 10 });
+                if(res.status === 'success') { alert("Restocked!"); loadLowStockVariants(); }
+            } catch(e) { alert("Error"); }
+        }
+
+        // --- Users (Sales/Delivery) ---
+        async function loadActiveUsers() {
+            try {
+                const res = await callAPI('getUsersForFrontend');
+                if(res.status === 'success') {
+                    let delHtml = '', salesHtml = '';
+                    res.data.forEach(u => {
+                        const row = `<tr><td>${u.name}<br><small>${u.phone}</small></td><td>${u.assignedArea}</td><td>${u.userId}</td><td><button class="btn btn-sm btn-danger" onclick="deleteUserAccount('${u.userId}')">Del</button></td></tr>`;
+                        if(u.role.toLowerCase() === 'delivery') delHtml += row; else if(u.role.toLowerCase() === 'salesman') salesHtml += row;
+                    });
+                    if(document.getElementById('delivery-table-body')) document.getElementById('delivery-table-body').innerHTML = delHtml || '<tr><td colspan="4" class="text-center">No Users</td></tr>';
+                    if(document.getElementById('salesman-table-body')) document.getElementById('salesman-table-body').innerHTML = salesHtml || '<tr><td colspan="4" class="text-center">No Users</td></tr>';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function registerUser(role) {
+            const isDel = role === 'delivery';
+            const prefix = isDel ? 'del' : 'sales';
+            const data = {
+                name: document.getElementById(prefix+'Name').value, phone: document.getElementById(prefix+'Phone').value,
+                area: document.getElementById(prefix+'Area').value, userId: document.getElementById(prefix+'UserId').value,
+                password: document.getElementById(prefix+'Password').value, role: isDel ? 'Delivery' : 'Salesman'
+            };
+            try {
+                const res = await callAPI('registerNewUser', { userData: data });
+                if(res.status === 'success') { alert("Created!"); document.getElementById(isDel ? 'addDeliveryForm' : 'addSalesmanForm').reset(); loadActiveUsers(); }
+            } catch(e) { alert("Error"); }
+        }
+
+        async function deleteUserAccount(userId) {
+            if(!confirm("Delete user?")) return;
+            try {
+                const res = await callAPI('deleteUser', { userId: userId });
+                if(res.status === 'success') { alert("Deleted!"); loadActiveUsers(); }
+            } catch(e) { alert("Error"); }
+        }
+
+        // --- Returns ---
+        async function loadReturnRequests() {
+            const tbody = document.getElementById('returns-table-body');
+            try {
+                const res = await callAPI('getReturnsForFrontend');
+                if(res.status === 'success' && res.data.length > 0) {
+                    let html = '';
+                    res.data.forEach(item => {
+                        const actionBtn = (item.returnStatus !== 'Approved' && item.returnStatus !== 'Rejected') ? `<button class="btn btn-sm btn-success me-1" onclick="updateReturnStatus('${item.returnId}', 'Approved')">OK</button><button class="btn btn-sm btn-danger" onclick="updateReturnStatus('${item.returnId}', 'Rejected')">X</button>` : 'Locked';
+                        html += `<tr><td>${item.returnId}</td><td>${item.orderId}</td><td>${item.reason}</td><td><span class="badge bg-secondary">${item.returnStatus||'Pending'}</span></td><td>${actionBtn}</td></tr>`;
+                    });
+                    tbody.innerHTML = html;
+                } else { tbody.innerHTML = '<tr><td colspan="7" class="text-center">No Returns</td></tr>'; }
+            } catch(e) { console.error(e); }
+        }
+
+        async function updateReturnStatus(returnId, status) {
+            try {
+                const res = await callAPI('updateReturnStatus', { returnId: returnId, status: status });
+                if(res.status === 'success') { alert("Updated!"); loadReturnRequests(); }
+            } catch(e) { alert("Error"); }
+        }
+
+</script>
+
+
+</body>
+</html>
